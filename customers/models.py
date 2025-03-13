@@ -19,9 +19,9 @@ class Customer(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.password = make_password(self.password)
-        self.firstname = cipher.encrypt(self.firstname.encode('utf-8').decode('utf-8'))
-        self.lastname = cipher.encrypt(self.lastname.encode('utf-8').decode('utf-8'))
-        self.phone = cipher.encrypt(self.phone.encode("utf-8").decode('utf-8'))
+        self.firstname = cipher.encrypt(self.firstname.encode('utf-8'))
+        self.lastname = cipher.encrypt(self.lastname.encode('utf-8'))
+        self.phone = cipher.encrypt(self.phone.encode("utf-8"))
         super(Customer, self).save(*args, **kwargs)
 
     def check_password(self, raw_password):
@@ -51,7 +51,7 @@ class CustomerToken(models.Model):
     def save(self, *args, **kwargs):
         if not self.key:
             self.key = binascii.hexlify(os.urandom(20)).decode('utf-8')
-        super().save(self, *args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.key

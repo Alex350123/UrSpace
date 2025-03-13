@@ -47,7 +47,7 @@ class OperatorToken(models.Model):
     def save(self, *args, **kwargs):
         if not self.key:
             self.key = binascii.hexlify(os.urandom(20)).decode('utf-8')
-        super().save(self, *args, **kwargs)
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.key

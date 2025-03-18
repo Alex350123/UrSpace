@@ -17,6 +17,7 @@ class CustomerRegisterView(APIView):
             print("Register Failed", serializer.errors)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+
 class CustomerLoginView(APIView):
     def post(self, request):
         email = request.data.get('email')
@@ -26,19 +27,17 @@ class CustomerLoginView(APIView):
             return Response({'error': 'Email and password are required'}, status=status.HTTP_400_BAD_REQUEST)
 
         try:
-            # find the user
             user = Customer.objects.get(email=email)
             print(f"User found: {user.email}")
 
-            # check if password matches
             if user.check_password(password):
                 print("Password matches")
-                token, created = CustomerToken.objects.get_or_create(customer=user)
-                if created:
-                    token.key = binascii.hexlify(os.urandom(20)).decode()
-                    token.save()
-                return Response({'token': token.key}, status=status.HTTP_200_OK)
+                CustomerToken.objects.filter(customer=user).delete()
+                token = CustomerToken(customer=user)
+                token.key = binascii.hexlify(os.urandom(20)).decode()
+                token.save()
 
+                return Response({'token': token.key}, status=status.HTTP_200_OK)
             else:
                 print("Password does not match")
                 return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
@@ -46,3 +45,9 @@ class CustomerLoginView(APIView):
         except Customer.DoesNotExist:
             print("User does not exist")
             return Response({'error': 'Invalid credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+def CustomerRegister(request):
+    return render(request,'Customer_Register.html')
+
+def CustomerLogin(request):
+    return render(request,'Customer_Login.html')

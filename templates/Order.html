@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - UR-Space</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .table-container {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="text-center mb-4">Your Order History</h2>
+
+        <div class="table-container">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Customer Name</th>
+                        <th>Room Type</th>
+                        <th>Location</th>
+                        <th>Date</th>
+                        <th>Time Slot</th>
+                        <th>Total Price</th>
+                    </tr>
+                </thead>
+                <tbody id="order-table-body">
+                    <tr><td colspan="6" class="text-center text-muted">Loading order history...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", fetchOrders);
+
+        function fetchOrders() {
+            fetch("/get-order-history")
+                .then(response => response.json())
+                .then(data => {
+                    let tableBody = document.getElementById("order-table-body");
+                    tableBody.innerHTML = "";
+
+                    if (data.length === 0) {
+                        tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No order records available</td></tr>`;
+                    } else {
+                        data.forEach(order => {
+                            let row = `<tr>
+                                <td>${order.customerName}</td>
+                                <td>${order.roomType}</td>
+                                <td>${order.location}</td>
+                                <td>${order.date}</td>
+                                <td>${order.timeSlot}</td>
+                                <td>${order.totalPrice}</td>
+                            </tr>`;
+                            tableBody.innerHTML += row;
+                        });
+                    }
+                })
+                .catch(error => {
+                    console.error("Error fetching order history:", error);
+                    document.getElementById("order-table-body").innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error loading data</td></tr>`;
+                });
+        }
+    </script>
+
+</body>
+</html>

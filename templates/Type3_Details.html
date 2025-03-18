@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Co-working Space - UR-Space</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+</head>
+<body class="bg-light">
+
+    <div class="container mt-4">
+        <h2 class="text-center">Co-working Space</h2>
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <img src="/static/image/Type3.jpg" alt="Co-working Space" class="img-fluid rounded">
+            </div>
+
+            <div class="col-md-6">
+                <h4>Room Details</h4>
+                <p>A flexible and collaborative working environment for freelancers, startups, and remote workers.</p>
+
+                <h4>Facilities</h4>
+                <ul>
+                    <li>Shared desks and chairs</li>
+                    <li>High-speed Wi-Fi</li>
+                    <li>Printing and scanning services</li>
+                    <li>Tea and coffee station</li>
+                    <li>Power outlets</li>
+                </ul>
+
+                <h4>Pricing</h4>
+                <p><strong>$2.5/hour</strong></p>
+
+                <!--Location -->
+                <label>Select Location</label>
+                <select id="location" class="form-control mb-2">
+                    <option value="">Select a location</option>
+                </select>
+
+                <!-- Booking Date -->
+                <label>Select Date</label>
+                <input type="text" id="date-picker" class="form-control mb-2" placeholder="Choose a date">
+
+                <!-- Start time and end time -->
+                <label>Select Start Time</label>
+                <input type="text" id="start-time" class="form-control mb-2" placeholder="Start time">
+
+                <label>Select End Time</label>
+                <input type="text" id="end-time" class="form-control mb-2" placeholder="End time">
+
+                <!-- Total Price -->
+                <label>Total Price</label>
+                <input type="text" id="total-price" class="form-control mb-3" placeholder="Auto-filled by backend" readonly>
+
+                <!-- Book and return buttons -->
+                <button id="book-now" class="btn btn-dark w-100" disabled>Book Now</button>
+
+                <button class="btn btn-secondary w-100 mt-2" onclick="location.href='/rentals/home/'">Back</button>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+        let selectedDate = null;  // 存储用户选择的日期
+        let pricePerHour = 2.5;  // 
+    
+        // 日期选择器
+        flatpickr("#date-picker", {
+            minDate: "today",
+            dateFormat: "Y-m-d",
+            onChange: function(selectedDates, dateStr) {
+                selectedDate = dateStr; // 存储用户选择的日期
+                checkFormCompletion();
+            },
+        });
+        
+        // 开始时间选择器
+        let startTimePicker = flatpickr("#start-time", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            onChange: function(selectedDates, startTime) {
+                if (startTime) {
+                    endTimePicker.set("minTime", startTime); // 设置结束时间的最早可选时间
+                    calculateTotalPrice();
+                }
+            }
+        });
+    
+        // 结束时间选择器
+        let endTimePicker = flatpickr("#end-time", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            onChange: calculateTotalPrice
+        });
+    
+        // 获取位置数据
+        let roomType = "Co-working Space";
+            fetch("/rentals/api/get_locations/?roomtype=" + encodeURIComponent(roomType), {
+            headers: {
+                'Authorization': 'Token ' + localStorage.getItem('CustomerToken')
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to fetch locations. Status: ' + response.status);
+            }
+            return response.json();
+        })
+        .then(data => {
+            const locationSelect = document.getElementById("location");
+            locationSelect.innerHTML = '<option value="">Select a location</option>';
+            data.forEach(loc => {
+                let option = document.createElement("option");
+                option.value = loc.room_id;  // 存 room_id
+                option.textContent = loc.locationname;
+                locationSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            const errorMessageDiv = document.getElementById("error-message");
+            errorMessageDiv.textContent = 'Error fetching locations: ' + error.message;
+            errorMessageDiv.style.display = 'block';
+        });
+        
+    
+        // 计算总价
+        function calculateTotalPrice() {
+            let startTime = document.getElementById("start-time").value;
+            let endTime = document.getElementById("end-time").value;
+    
+            if (selectedDate && startTime && endTime) {
+                let start = new Date(`${selectedDate}T${startTime}:00`);
+                let end = new Date(`${selectedDate}T${endTime}:00`);
+    
+                if (end > start) {
+                    let diffHours = (end - start) / (1000 * 60 * 60); // 计算小时数
+                    let totalPrice = diffHours * pricePerHour;
+                    document.getElementById("total-price").value = `$${totalPrice.toFixed(2)}`;
+                } else {
+                    document.getElementById("total-price").value = "Invalid Time Selection";
+                }
+                checkFormCompletion();
+            }
+        }
+    
+        // 监听输入变化，检查是否填写完整
+        document.getElementById("total-price").addEventListener("input", checkFormCompletion);
+    
+        function checkFormCompletion() {
+            const fields = ["location", "date-picker", "start-time", "end-time", "total-price"];
+            const filled = fields.every(id => document.getElementById(id).value.trim() !== "" && document.getElementById(id).value !== "Invalid Time Selection");
+            document.getElementById("book-now").disabled = !filled;
+        }
+    
+        // 绑定 Book Now 按钮点击事件
+        document.getElementById("book-now").addEventListener("click", proceedToPayment);
+        });
+    
+    // 预订房间的 API 请求
+    function proceedToPayment() {
+        console.log("proceedToPayment called");
+        let token = localStorage.getItem("CustomerToken");
+        if (!token) {
+            alert("Authentication token missing. Please log in again.");
+            return;
+        }
+    
+        let room_id = document.getElementById("location").value;
+        let date = document.getElementById("date-picker").value;
+        let startTime = document.getElementById("start-time").value;
+        let endTime = document.getElementById("end-time").value;
+        let totalPrice = document.getElementById("total-price").value.replace("$", "").trim();
+    
+        if (!room_id || !date || !startTime || !endTime || !totalPrice || isNaN(totalPrice)) {
+            alert("Please complete all fields before booking.");
+            return;
+        }
+    
+        let requestData = {
+            room_id: room_id,
+            rent_date: date,
+            rent_start_time: startTime ,  
+            rent_end_time: endTime,  
+            total_price: parseFloat(totalPrice)
+        };
+    
+        console.log("Sending booking request:", requestData); 
+    
+        fetch("/rentals/api/save_rentals/", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Token " + token
+            },
+            body: JSON.stringify(requestData)
+        })
+        .then(response => response.json().then(data => ({ status: response.status, data: data })))
+        .then(({ status, data }) => {
+            console.log("Response Data:", data);
+            if (status !== 201 || !data.rental_id) {
+                alert("Error: " + (data.error || "Unknown error"));
+                return;
+            }
+            alert("Booking successful! Rental ID: " + data.rental_id);
+            window.location.href = "/rentals/payment/";
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Failed to book the room. Please try again.");
+        });
+    }
+    </script>
+
+</body>
+</html>

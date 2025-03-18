@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Operator Home - UR-Space</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: white;
+            margin: 0;
+            padding: 0;
+        }
+        .top-section {
+            background-color: #343a40;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .container {
+            display: flex;
+            height: calc(100vh - 60px);
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-right: 2px solid #ddd;
+        }
+        .sidebar a {
+            display: block;
+            padding: 10px;
+            font-size: 18px;
+            color: black;
+            text-decoration: none;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            transition: background 0.3s;
+        }
+        .sidebar a:hover {
+            background-color: #ddd;
+        }
+        .content {
+            flex: 1;
+            padding: 20px;
+        }
+        .table-container {
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .update-link {
+            color: blue;
+            cursor: pointer;
+            text-decoration: underline;
+        }
+        .update-link:hover {
+            color: darkblue;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top-section -->
+    <div class="top-section">
+        Rental System for Operator
+    </div>
+
+    <!-- Left navigation bar -->
+    <div class="container">
+        <div class="sidebar">
+            <a onclick="fetchRooms()">Track availability of the room</a>
+            <a onclick="fetchRepairs()">Repair</a>
+            <a onclick="fetchAvailability()">Change availability</a>
+        </div>
+
+        <!-- Right content area -->
+        <div class="content">           
+            <div id="rooms-section" class="table-container" style="display: none;">
+                <h4>Room Availability</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Room Name</th>
+                            <th>Status</th>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody id="rooms-table"></tbody>
+                </table>
+            </div>
+
+            <!-- Maintenance management part -->
+            <div id="repair-section" class="table-container">
+                <h4>Repair Updates</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Issue</th>
+                            <th>Status</th>
+                            <th>Update</th>
+                        </tr>
+                    </thead>
+                    <tbody id="repairs-table">
+                        <tr><td colspan="4" class="text-center text-muted">Loading repair records...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Change Room Status Section -->
+            <div id="availability-section" class="table-container" style="display: none;">
+                <h4>Change Room Availability</h4>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Room ID</th>
+                            <th>Room Name</th>
+                            <th>Availability</th>
+                            <th>Change</th>
+                        </tr>
+                    </thead>
+                    <tbody id="availability-table"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", fetchRepairs);
+
+        function fetchRepairs() {
+            fetch('/get-repairs')
+            .then(response => response.json())
+            .then(data => {
+                let table = document.getElementById("repairs-table");
+                table.innerHTML = "";
+
+                if (data.length === 0) {
+                    table.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No repair records available</td></tr>`;
+                } else {
+                    data.forEach(repair => {
+                        let row = `<tr>
+                            <td>${repair.room_id}</td>
+                            <td>${repair.issue}</td>
+                            <td>${repair.status}</td>
+                            <td><span class="update-link" onclick="updateRepair('${repair.id}')">Update</span></td>
+                        </tr>`;
+                        table.innerHTML += row;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching repairs:", error);
+                document.getElementById("repairs-table").innerHTML = `<tr><td colspan="4" class="text-center text-danger">Error loading data</td></tr>`;
+            });
+        }
+
+        // Get room data
+        function fetchRooms() {
+            document.getElementById("rooms-section").style.display = "block";
+            document.getElementById("repair-section").style.display = "none";
+            document.getElementById("availability-section").style.display = "none";
+
+            fetch('/get-rooms')
+            .then(response => response.json())
+            .then(data => {
+                let table = document.getElementById("rooms-table");
+                table.innerHTML = "";
+
+                data.forEach(room => {
+                    let row = `<tr>
+                        <td>${room.id}</td>
+                        <td>${room.name}</td>
+                        <td>${room.status}</td>
+                        <td><span class="update-link" onclick="updateRoom('${room.id}')">Update</span></td>
+                    </tr>`;
+                    table.innerHTML += row;
+                });
+            })
+            .catch(error => console.error("Error fetching rooms:", error));
+        }
+
+        // Get room availability data
+        function fetchAvailability() {
+            document.getElementById("rooms-section").style.display = "none";
+            document.getElementById("repair-section").style.display = "none";
+            document.getElementById("availability-section").style.display = "block";
+
+            fetch('/get-availability')
+            .then(response => response.json())
+            .then(data => {
+                let table = document.getElementById("availability-table");
+                table.innerHTML = "";
+
+                data.forEach(room => {
+                    let row = `<tr>
+                        <td>${room.id}</td>
+                        <td>${room.name}</td>
+                        <td>${room.availability}</td>
+                        <td><span class="update-link" onclick="changeAvailability('${room.id}')">Change</span></td>
+                    </tr>`;
+                    table.innerHTML += row;
+                });
+            })
+            .catch(error => console.error("Error fetching availability:", error));
+        }
+
+        function updateRepair(repairId) {
+            alert("Updating repair status for ID: " + repairId);
+        }
+    </script>
+
+</body>
+</html>

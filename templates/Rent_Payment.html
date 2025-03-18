@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rent Payment - UR-Space</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: white;
+        }
+        .container {
+            margin-top: 30px;
+        }
+        .summary-box, .payment-box {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .btn-pay {
+            margin-top: 20px;
+        }
+        .map {
+            height: 400px;
+            width: 100%;
+            margin-bottom: 20px;
+            border-radius: 10px;
+        }
+        .bottom-section {
+            text-align: center;
+            padding: 15px;
+            background-color: #f8f9fa;
+            margin-top: 30px;
+        }
+        .contact-us {
+            cursor: pointer;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+        .contact-us:hover {
+            color: red;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2 class="text-center">Confirm Your Payment</h2>
+
+        <!-- Order Summary -->
+        <div class="summary-box">
+            <h4>Booking Summary</h4>
+            <div class="mb-2">
+                <label for="room-name" class="form-label"><strong>Room</strong></label>
+                <input type="text" id="room-name" class="form-control" readonly placeholder="Fetching from backend...">
+            </div>
+            <div class="mb-2">
+                <label for="booking-time" class="form-label"><strong>Date & Time</strong></label>
+                <input type="text" id="booking-time" class="form-control" readonly placeholder="Fetching from backend...">
+            </div>
+            <div class="mb-2">
+                <label for="total-price" class="form-label"><strong>Total Price</strong></label>
+                <input type="text" id="total-price" class="form-control" readonly placeholder="Fetching from backend...">
+            </div>
+        </div>
+
+        <!-- Google map -->
+        <div id="map" class="map"></div>
+
+        <!-- pay card -->
+        <div class="payment-box">
+            <h4>Payment Method</h4>
+            <p>Credit Card</p>
+            <div class="mb-3">
+                <label for="creditNumber" class="form-label">Credit Number</label>
+                <input type="text" class="form-control" id="creditNumber" placeholder="Enter credit number">
+            </div>
+            <div class="mb-3">
+                <label for="cvv" class="form-label">CVV</label>
+                <input type="text" class="form-control" id="cvv" placeholder="Enter CVV">
+            </div>
+        </div>
+
+        <!-- pay button -->
+        <button id="pay-now" class="btn btn-dark w-100 btn-pay" disabled onclick="processPayment()">Pay Now</button>
+        <button class="btn btn-secondary w-100 btn-pay" onclick="location.href='Customer_Home.html'">Back to Home</button>
+    </div>
+
+    <!-- Bottom Section -->
+    <div class="bottom-section">
+        <span class="contact-us">Contact Us</span>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Google Maps API -->
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAnnLStBenjuRmj-zU9SUDiTbsazWXI-74&callback=initMap"></script>
+
+    <script>
+        function initMap() {
+            try {
+                const mapOptions = {
+                    center: { lat: 55.881, lng: -4.3408 }, // 确保地图正确加载
+                    zoom: 15
+                };
+                const map = new google.maps.Map(document.getElementById("map"), mapOptions);
+
+                // 预订房间位置（可从后端获取动态数据）
+                const roomLocation = { lat: 55.881, lng: -4.3408 };
+                new google.maps.Marker({
+                    position: roomLocation,
+                    map: map,
+                    title: "Your Booking Location"
+                });
+            } catch (error) {
+                console.error("Google Map failed to load:", error);
+                document.getElementById("map").innerHTML = "<p style='color:red; text-align:center;'>Failed to load map.</p>";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            
+            setTimeout(() => {
+                document.getElementById("room-name").value = ""; 
+                document.getElementById("booking-time").value = ""; 
+                document.getElementById("total-price").value = ""; 
+            }, 500);
+
+            // Listen for credit card input and activate the "Pay Now" button
+            const creditNumber = document.getElementById("creditNumber");
+            const cvv = document.getElementById("cvv");
+            const payNowBtn = document.getElementById("pay-now");
+
+            function checkInputs() {
+                if (creditNumber.value.trim() !== "" && cvv.value.trim() !== "") {
+                    payNowBtn.removeAttribute("disabled");
+                } else {
+                    payNowBtn.setAttribute("disabled", "true");
+                }
+            }
+
+            creditNumber.addEventListener("input", checkInputs);
+            cvv.addEventListener("input", checkInputs);
+        });
+
+        function processPayment() {
+            alert("Payment successful!");
+            location.href = "Customer_Home.html"; // 支付成功后返回主页
+        }
+    </script>
+
+</body>
+</html>

@@ -19,29 +19,31 @@ class Customer(models.Model):
     def save(self, *args, **kwargs):
         if not self.pk:
             self.password = make_password(self.password)
-        self.firstname = cipher.encrypt(self.firstname.encode('utf-8'))
-        self.lastname = cipher.encrypt(self.lastname.encode('utf-8'))
-        self.phone = cipher.encrypt(self.phone.encode("utf-8"))
+
+        self.firstname = cipher.encrypt(self.firstname.encode('utf-8')).decode()  # 转为字符串存储
+        self.lastname = cipher.encrypt(self.lastname.encode('utf-8')).decode()
+        self.phone = cipher.encrypt(self.phone.encode('utf-8')).decode()
+
         super(Customer, self).save(*args, **kwargs)
 
     def check_password(self, raw_password):
         return check_password(raw_password, self.password)
 
     def get_decrypted_firstname(self):
-        return cipher.decrypt(self.firstname.encode('utf-8')).decode('utf-8')
+        return cipher.decrypt(self.firstname.encode()).decode('utf-8')
 
     def get_decrypted_lastname(self):
-        return cipher.decrypt(self.lastname.encode('utf-8')).decode('utf-8')
+        return cipher.decrypt(self.lastname.encode()).decode('utf-8')
 
     def get_decrypted_phone(self):
-        return cipher.decrypt(self.phone.encode('utf-8')).decode('utf-8')
-
+        return cipher.decrypt(self.phone.encode()).decode('utf-8')
 
     def __str__(self):
-        if self.has_changed('firstname'):
-            self.firstname = cipher.encrypt(self.firstname.encode('utf-8').decode('utf-8'))
+        try:
+            return f"{self.get_decrypted_firstname()} {self.get_decrypted_lastname()}"
+        except Exception:
+            return f"Customer {self.Customerid} (Decryption Failed)"
 
-        return f"{self.get_decrypted_firstname()} {self.get_decrypted_lastname()}"
 
 class CustomerToken(models.Model):
     key = models.CharField(max_length=40, primary_key=True)

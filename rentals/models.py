@@ -1,8 +1,9 @@
 from django.db import models
+import datetime
+
 from customers.models import Customer
 # Create your models here.
 class Location(models.Model):
-
     Locationid = models.AutoField(primary_key=True)
     locationname = models.CharField(max_length=50)
     locationaddress = models.CharField(max_length=50)
@@ -13,14 +14,14 @@ class Location(models.Model):
 
 class Room(models.Model):
     Roomid = models.AutoField(primary_key=True)
-    roomname = models.CharField(max_length=50)
-    roomtype = models.CharField(max_length=50)
     Locationid = models.ForeignKey(Location, on_delete=models.CASCADE)
+    roomtype = models.CharField(blank=False, max_length=50)
     availability = models.BooleanField(default=True)
     price = models.FloatField(default=0)
-    is_detective_light = models.BooleanField(default=False)
+    is_defective_light = models.BooleanField(default=False)
     is_defective_chair = models.BooleanField(default=False)
     is_defective_socket = models.BooleanField(default=False)
+    is_defective_wifi = models.BooleanField(default=False)
     def __str__(self):
         return f"{self.roomname}+ {self.roomtype}"
 
@@ -28,6 +29,7 @@ class Rental(models.Model):
     Rentalid = models.AutoField(primary_key=True)
     Customerid = models.ForeignKey(Customer, on_delete=models.CASCADE)
     Roomid = models.ForeignKey(Room, on_delete=models.CASCADE)
+    rent_date = models.DateField(default=datetime.date.today)
     rent_start_time = models.DateTimeField()
     rent_end_time = models.DateTimeField()
     charge = models.FloatField(default=0)

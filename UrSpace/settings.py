@@ -28,6 +28,17 @@ DEBUG = True
 ALLOWED_HOSTS = []
 
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'customers.utils.CustomerTokenAuthentication',
+        'employees.utils.OperatorTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',   # 可选，支持会话认证
+        'rest_framework.authentication.BasicAuthentication',      # 可选，支持基本认证
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',  # 需要身份验证
+    ),
+}
 
 # Application definition
 
@@ -122,7 +133,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = '/static/'
+STATICFILES_DIRS = [BASE_DIR / "static"]
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

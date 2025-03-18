@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UR-Space Rent</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .top-section {
+      position: relative;
+      padding: 20px;
+      background-color: #343a40;
+      color: white;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .top-title {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2rem;
+      font-weight: bold;
+      margin: 0;
+    }
+    .right-section {
+      display: flex;
+      align-items: center;
+    }
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+    }
+    .dropdown-menu {
+      text-align: left;
+      min-width: 120px;
+    }
+    .container {
+      margin-top: 20px;
+    }
+    .room-card {
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .room-card:hover {
+      transform: scale(1.05);
+    }
+    .room-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Section -->
+  <div class="top-section">
+    <h1 class="top-title">UR-Space Rent</h1>
+    <div class="right-section">
+      <div class="dropdown">
+        <a class="avatar-link" data-bs-toggle="dropdown">
+          <img src="/static/image/profile.png" alt="User Avatar" class="avatar">
+        </a>
+        <!-- drop down -->
+        <ul class="dropdown-menu dropdown-menu-end">
+          <li><a class="dropdown-item" href="Personal_Home.html">Profile</a></li>
+          <li><a class="dropdown-item" href="Order.html">Order</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="Customer_Login.html">Logout</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Office Space List -->
+  <div class="container">
+    <div class="row" id="room-list">
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const rooms = [
+        {
+          name: "Small Study Room",
+          price: "$1/hour",
+          image: "/static/image/Type1.jpg",
+          detailsPage: "/rentals/SSR/"
+        },
+        {
+          name: "Medium Meeting Room",
+          price: "$2/hour",
+          image: "/static/image/Type2.jpg",
+          detailsPage: "/rentals/MMR/"
+        },
+        {
+          name: "Co-working Space",
+          price: "$2.5/hour",
+          image: "/static/image/Type3.jpg",
+          detailsPage: "/rentals/CWS/"
+        },
+        {
+          name: "Quiet Study Room",
+          price: "$1.2/hour",
+          image: "/static/image/Type4.jpg",
+          detailsPage: "/rentals/QSR/"
+        },
+        {
+          name: "Temporary Workstation",
+          price: "$0.8/hour",
+          image: "/static/image/Type5.jpg",
+          detailsPage: "/rentals/TEMP/"
+        }
+      ];
+
+      const roomList = document.getElementById("room-list");
+
+      rooms.forEach(room => {
+        const roomCard = `
+          <div class="col-md-4 mb-4">
+            <div class="card room-card" onclick="location.href='${room.detailsPage}'">
+              <img src="${room.image}" class="card-img-top room-image" alt="${room.name}">
+              <div class="card-body">
+                <h5 class="card-title">${room.name}</h5>
+                <p><strong>Price:</strong> ${room.price}</p>
+              </div>
+            </div>
+          </div>
+        `;
+        roomList.innerHTML += roomCard;
+      });
+    });
+  </script>
+
+</body>
+</html>

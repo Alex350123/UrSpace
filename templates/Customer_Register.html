@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Register</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('/static/image/background.jpeg');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .form-container {
+            background-color: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+        .btn-custom {
+            width: 100%;
+        }
+        .btn-return {
+            width: 100%;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-container">
+        <h2 class="text-center mb-3">Register Now!</h2>
+        <form id="registerForm" onsubmit="return handleRegister(event)">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="firstName" class="form-label">First Name</label>
+                <input type="text" class="form-control" id="firstName" required>
+            </div>
+            <div class="mb-3">
+                <label for="lastName" class="form-label">Last Name</label>
+                <input type="text" class="form-control" id="lastName" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Phone Number</label>
+                <input type="tel" class="form-control" id="phone" required>
+            </div>
+            <div class="mb-3">
+                <label for="dob" class="form-label">Date of Birth</label>
+                <input type="date" class="form-control" id="dob" required>
+            </div>
+            <!-- Register button -->
+            <button type="submit" class="btn btn-dark btn-custom">Register</button>
+            <!-- Return button -->
+            <button type="button" class="btn btn-secondary btn-return" onclick="location.href='/'">Return</button>
+        </form>
+        <div id="success-message" class="text-success mt-3 text-center"></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    const cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        
+        
+        function handleRegister(event) {
+            event.preventDefault();
+            var firstname = document.getElementById('firstName').value;
+            var lastname = document.getElementById('lastName').value;
+            var email = document.getElementById('email').value;
+            var password = document.getElementById('password').value;
+            var phone = document.getElementById('phone').value;
+            var dob = document.getElementById('dob').value;
+            var csrftoken = getCookie('csrftoken');
+
+            fetch('/customers/api/register/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken  // 添加CSRF token
+                },
+                 body: JSON.stringify({ 
+                    firstname: firstname,  // 这里的键名要与后端期望的匹配
+                    lastname: lastname,  // 这里的键名要与后端期望的匹配
+                    email: email,
+                    password: password,
+                    phone: phone,
+                    DOB: dob  // 
+                 })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Registration failed');
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('success-message').innerText = 'Registration successful';
+                    setTimeout(() => location.href = 'Customer_Login.html', 2000);
+                } else {
+                    document.getElementById('success-message').innerText = data.message;
+                }
+            })
+            .catch(error => {
+                document.getElementById('success-message').innerText = error.message;
+            });
+        }
+    </script>
+
+</body>
+</html>

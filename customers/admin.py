@@ -1,3 +1,14 @@
 from django.contrib import admin
+from .models import Customer, CustomerToken
 
-# Register your models here.
+
+@admin.register(Customer)
+class CustomerAdmin(admin.ModelAdmin):
+    list_display = ( 'DOB','password','firstname','lastname')
+    search_fields = ('email', )
+    ordering = ('email',)
+    readonly_fields = ('DOB',)
+
+@admin.register(CustomerToken)
+class CustomerTokenAdmin(admin.ModelAdmin):
+    list_display = ("customer", "key", "created")

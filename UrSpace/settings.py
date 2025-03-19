@@ -14,7 +14,7 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 让 Django 识别静态文件
+
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
@@ -39,18 +39,18 @@ CSRF_TRUSTED_ORIGINS = ["https://urspace.onrender.com"]
 
 
 
-SIMPLEUI_INDEX = 'Urspace Manager'  # 直接修改后台首页标题
+SIMPLEUI_INDEX = 'Urspace Manager'
 
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'customers.utils.CustomerTokenAuthentication',
         'employees.utils.OperatorTokenAuthentication',
-        'rest_framework.authentication.SessionAuthentication',   # 可选，支持会话认证
-        'rest_framework.authentication.BasicAuthentication',      # 可选，支持基本认证
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
-        'rest_framework.permissions.IsAuthenticated',  # 需要身份验证
+        'rest_framework.permissions.IsAuthenticated',
     ),
 }
 

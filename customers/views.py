@@ -15,7 +15,7 @@ from cryptography.fernet import Fernet
 from django.conf import settings
 from rentals.models import Rental
 
-cipher = Fernet(settings.FERNET_KEY.encode())  # 初始化加密解密器
+cipher = Fernet(settings.FERNET_KEY.encode())
 # Create your views here.
 class CustomerRegisterView(APIView):
     def post(self, request, format=None):
@@ -58,11 +58,9 @@ class CustomerLoginView(APIView):
 
 
 def is_encrypted(value):
-    """
-    判断数据是否加密
-    """
+
     try:
-        # Fernet 加密后的数据是 base64 编码的
+
         base64.b64decode(value.encode())
         return True
     except Exception:
@@ -72,13 +70,13 @@ def is_encrypted(value):
 @authentication_classes([CustomerTokenAuthentication])
 @permission_classes([IsAuthenticated])
 def get_personal_info(request):
-    customer = request.user  # 通过 token 获取当前用户
+    customer = request.user
 
     if not customer:
         return Response({"error": "User not found"}, status=status.HTTP_404_NOT_FOUND)
 
     try:
-        # **先检查数据是否加密**
+
         decrypted_firstname = cipher.decrypt(customer.firstname.encode()).decode('utf-8')
         decrypted_lastname = cipher.decrypt(customer.lastname.encode()).decode('utf-8')
         decrypted_phone = cipher.decrypt(customer.phone.encode()).decode('utf-8')
@@ -98,7 +96,7 @@ def get_personal_info(request):
 @authentication_classes([CustomerTokenAuthentication])
 @permission_classes([IsAuthenticated])
 def load_orders(request):
-    customer = request.user  # 通过 Token 获取当前登录用户
+    customer = request.user
     rentals = Rental.objects.filter(Customerid=customer).order_by('-rent_date', '-rent_start_time')
 
     order_list = []

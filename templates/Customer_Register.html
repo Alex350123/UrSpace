@@ -102,11 +102,11 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken  // 添加CSRF token
+                    'X-CSRFToken': csrftoken  
                 },
                  body: JSON.stringify({ 
-                    firstname: firstname,  // 这里的键名要与后端期望的匹配
-                    lastname: lastname,  // 这里的键名要与后端期望的匹配
+                    firstname: firstname,  
+                    lastname: lastname,  
                     email: email,
                     password: password,
                     phone: phone,

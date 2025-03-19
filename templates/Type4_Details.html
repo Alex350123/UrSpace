@@ -67,20 +67,20 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-        let selectedDate = null;  // 存储用户选择的日期
+        let selectedDate = null;  // 
         let pricePerHour = 1.2;  // 
     
-        // 日期选择器
+        
         flatpickr("#date-picker", {
             minDate: "today",
             dateFormat: "Y-m-d",
             onChange: function(selectedDates, dateStr) {
-                selectedDate = dateStr; // 存储用户选择的日期
+                selectedDate = dateStr; // 
                 checkFormCompletion();
             },
         });
         
-        // 开始时间选择器
+        
         let startTimePicker = flatpickr("#start-time", {
             enableTime: true,
             noCalendar: true,
@@ -88,13 +88,13 @@
             time_24hr: true,
             onChange: function(selectedDates, startTime) {
                 if (startTime) {
-                    endTimePicker.set("minTime", startTime); // 设置结束时间的最早可选时间
+                    endTimePicker.set("minTime", startTime); 
                     calculateTotalPrice();
                 }
             }
         });
     
-        // 结束时间选择器
+        
         let endTimePicker = flatpickr("#end-time", {
             enableTime: true,
             noCalendar: true,
@@ -103,7 +103,7 @@
             onChange: calculateTotalPrice
         });
     
-        // 获取位置数据
+        
         let roomType = "Quiet Study Room";
             fetch("/rentals/api/get_locations/?roomtype=" + encodeURIComponent(roomType), {
             headers: {
@@ -121,7 +121,7 @@
             locationSelect.innerHTML = '<option value="">Select a location</option>';
             data.forEach(loc => {
                 let option = document.createElement("option");
-                option.value = loc.room_id;  // 存 room_id
+                option.value = loc.room_id;  
                 option.textContent = loc.locationname;
                 locationSelect.appendChild(option);
             });
@@ -144,7 +144,7 @@
                 let end = new Date(`${selectedDate}T${endTime}:00`);
     
                 if (end > start) {
-                    let diffHours = (end - start) / (1000 * 60 * 60); // 计算小时数
+                    let diffHours = (end - start) / (1000 * 60 * 60); 
                     let totalPrice = diffHours * pricePerHour;
                     document.getElementById("total-price").value = `$${totalPrice.toFixed(2)}`;
                 } else {
@@ -154,7 +154,7 @@
             }
         }
     
-        // 监听输入变化，检查是否填写完整
+        
         document.getElementById("total-price").addEventListener("input", checkFormCompletion);
     
         function checkFormCompletion() {
@@ -163,11 +163,11 @@
             document.getElementById("book-now").disabled = !filled;
         }
     
-        // 绑定 Book Now 按钮点击事件
+        
         document.getElementById("book-now").addEventListener("click", proceedToPayment);
         });
     
-    // 预订房间的 API 请求
+    
     function proceedToPayment() {
         console.log("proceedToPayment called");
         let token = localStorage.getItem("CustomerToken");

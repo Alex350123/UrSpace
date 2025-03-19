@@ -88,7 +88,7 @@ def change_availability(request):
         return Response({"error": "Room ID is required"}, status=status.HTTP_400_BAD_REQUEST)
 
     room = get_object_or_404(Room, Roomid=room_id)
-    room.availability = False  # 将房间状态改为不可用
+    room.availability = False
     room.save()
 
     return Response({"message": f"Room {room_id} availability updated"}, status=status.HTTP_200_OK)
@@ -133,7 +133,7 @@ def repair_defective(request):
     try:
         room = Room.objects.get(Roomid=room_id)
 
-        # 将所有损坏标志设为 False
+
         room.is_defective_light = False
         room.is_defective_chair = False
         room.is_defective_socket = False

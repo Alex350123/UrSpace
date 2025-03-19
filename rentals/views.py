@@ -6,7 +6,7 @@ from django.shortcuts import render
 from django.utils import timezone
 from django.utils.dateparse import parse_datetime
 from rest_framework import status
-from rest_framework.decorators import api_view, authentication_classes, permission_classes# Create your views here.
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.generics import get_object_or_404
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -48,7 +48,7 @@ def get_locations(request):
         rooms = Room.objects.filter(roomtype=roomtype, availability=True).select_related('Locationid')
         locations = [
             {
-                'room_id': room.Roomid,  # 添加 room_id
+                'room_id': room.Roomid,  # add room_id
                 'location_id': room.Locationid.Locationid,
                 'locationname': room.Locationid.locationname
             }
@@ -81,45 +81,43 @@ from .models import Rental, Room
 @authentication_classes([CustomerTokenAuthentication])
 @permission_classes([IsAuthenticated])
 def save_rentals(request):
-    """
-    API 用于保存用户的租赁订单
-    """
-    customer = request.user  # 通过 token 获取当前登录用户
+
+    customer = request.user
     data = request.data
 
-    # 获取前端提交的数据
-    room_id = data.get('room_id')
-    rent_date = data.get('rent_date')  # YYYY-MM-DD 格式
-    rent_start_time = data.get('rent_start_time')  # HH:mm 格式
-    rent_end_time = data.get('rent_end_time')  # HH:mm 格式
 
-    # 确保所有必需字段都已提供
+    room_id = data.get('room_id')
+    rent_date = data.get('rent_date')  # YYYY-MM-DD
+    rent_start_time = data.get('rent_start_time')  # HH:mm
+    rent_end_time = data.get('rent_end_time')  # HH:mm
+
+
     if not all([room_id, rent_date, rent_start_time, rent_end_time]):
         return Response({'error': 'Missing required fields'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # 查找房间
+
     room = get_object_or_404(Room, Roomid=room_id)
 
-    # 确保房间可用
+
     if not room.availability:
         return Response({'error': 'Selected room is not available'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # 解析日期和时间，并确保有时区信息
+
     try:
         rent_start_datetime = timezone.make_aware(parse_datetime(f"{rent_date}T{rent_start_time}:00"))
         rent_end_datetime = timezone.make_aware(parse_datetime(f"{rent_date}T{rent_end_time}:00"))
 
-        # 确保结束时间晚于开始时间
+
         if rent_end_datetime <= rent_start_datetime:
             return Response({'error': 'End time must be later than start time'}, status=status.HTTP_400_BAD_REQUEST)
 
-        # 计算租赁费用
+
         duration_hours = (rent_end_datetime - rent_start_datetime).total_seconds() / 3600
-        total_charge = duration_hours * room.price  # 价格 = 小时数 * 房间单价
+        total_charge = duration_hours * room.price
     except Exception as e:
         return Response({'error': f'Invalid date or time format: {str(e)}'}, status=status.HTTP_400_BAD_REQUEST)
 
-    # 创建租赁订单
+
     rental = Rental.objects.create(
         Customerid=customer,
         Roomid=room,
@@ -135,7 +133,7 @@ def save_rentals(request):
         'message': 'Rental saved successfully',
         'rental_id': rental.Rentalid,
         'total_charge': total_charge,
-        'payment_status': bool(rental.paymentstatus)  # ✅ 转换为布尔值，防止 JSON 解析错误
+        'payment_status': bool(rental.paymentstatus)
     }, status=status.HTTP_201_CREATED)
 
 @api_view(['GET'])

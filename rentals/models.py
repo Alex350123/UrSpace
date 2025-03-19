@@ -23,7 +23,7 @@ class Room(models.Model):
     is_defective_socket = models.BooleanField(default=False)
     is_defective_wifi = models.BooleanField(default=False)
     def __str__(self):
-        return f"{self.roomname}+ {self.roomtype}"
+        return f"{self.Roomid}+ {self.roomtype}"
 
 class Rental(models.Model):
     Rentalid = models.AutoField(primary_key=True)
@@ -34,6 +34,7 @@ class Rental(models.Model):
     rent_end_time = models.DateTimeField()
     charge = models.FloatField(default=0)
     paymentstatus = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return f"rent order {self.Rentalid} from {self.rent_start_time} to {self.rent_end_time} at {self.Roomid}"

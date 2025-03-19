@@ -31,7 +31,7 @@
                     <tr>
                         <th>Customer Name</th>
                         <th>Room Type</th>
-                        <th>Location</th>
+                        <th>Locationa Address</th>
                         <th>Date</th>
                         <th>Time Slot</th>
                         <th>Total Price</th>
@@ -49,33 +49,38 @@
         document.addEventListener("DOMContentLoaded", fetchOrders);
 
         function fetchOrders() {
-            fetch("/get-order-history")
-                .then(response => response.json())
-                .then(data => {
-                    let tableBody = document.getElementById("order-table-body");
-                    tableBody.innerHTML = "";
-
-                    if (data.length === 0) {
-                        tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No order records available</td></tr>`;
-                    } else {
-                        data.forEach(order => {
-                            let row = `<tr>
-                                <td>${order.customerName}</td>
-                                <td>${order.roomType}</td>
-                                <td>${order.location}</td>
-                                <td>${order.date}</td>
-                                <td>${order.timeSlot}</td>
-                                <td>${order.totalPrice}</td>
-                            </tr>`;
-                            tableBody.innerHTML += row;
-                        });
-                    }
-                })
-                .catch(error => {
-                    console.error("Error fetching order history:", error);
-                    document.getElementById("order-table-body").innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error loading data</td></tr>`;
-                });
+            fetch("/api/load_orders/", {
+                headers: {
+                    "Authorization": "Token " + localStorage.getItem("CustomerToken")
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                let tableBody = document.getElementById("order-table-body");
+                tableBody.innerHTML = "";
+        
+                if (data.length === 0) {
+                    tableBody.innerHTML = `<tr><td colspan="6" class="text-center text-muted">No order records available</td></tr>`;
+                } else {
+                    data.forEach(order => {
+                        let row = `<tr>
+                            <td>${order.customerName}</td>
+                            <td>${order.roomType}</td>
+                            <td>${order.location}</td>
+                            <td>${order.date}</td>
+                            <td>${order.timeSlot}</td>
+                            <td>${order.totalPrice}</td>
+                        </tr>`;
+                        tableBody.innerHTML += row;
+                    });
+                }
+            })
+            .catch(error => {
+                console.error("Error fetching order history:", error);
+                document.getElementById("order-table-body").innerHTML = `<tr><td colspan="6" class="text-center text-danger">Error loading data</td></tr>`;
+            });
         }
+
     </script>
 
 </body>

@@ -4,9 +4,7 @@ from .models import Customer, CustomerToken
 
 @admin.register(Customer)
 class CustomerAdmin(admin.ModelAdmin):
-    list_display = ( 'DOB','password','firstname','lastname')
-    search_fields = ('email', )
-    ordering = ('email',)
+    list_display = ( 'password','firstname','lastname','phone')
     readonly_fields = ('DOB',)
 
 @admin.register(CustomerToken)

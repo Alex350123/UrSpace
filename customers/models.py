@@ -5,7 +5,8 @@ from django.contrib.auth.hashers import make_password, check_password
 import binascii
 import os
 # Create your models here.
-cipher =  Fernet(settings.FERNET_KEY.encode())
+cipher = Fernet(settings.FERNET_KEY.encode())
+
 
 class Customer(models.Model):
     Customerid = models.AutoField(primary_key=True)

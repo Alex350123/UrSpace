@@ -67,10 +67,10 @@
         </a>
         <!-- drop down -->
         <ul class="dropdown-menu dropdown-menu-end">
-          <li><a class="dropdown-item" href="Personal_Home.html">Profile</a></li>
-          <li><a class="dropdown-item" href="Order.html">Order</a></li>
+          <li><a class="dropdown-item" href="/profile/">Profile</a></li>
+          <li><a class="dropdown-item" href="/order/">Order</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="Customer_Login.html">Logout</a></li>
+          <li><a class="dropdown-item" onclick="logout()">Logout</a></li>
         </ul>
       </div>
     </div>
@@ -135,6 +135,13 @@
         roomList.innerHTML += roomCard;
       });
     });
+    
+    function logout() {
+        // clear local token
+        localStorage.removeItem('CustomerToken');
+        alert("You have been logged out.");
+        window.location.href = "/"; 
+    }
   </script>
 
 </body>

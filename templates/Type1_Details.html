@@ -122,7 +122,7 @@
         locationSelect.innerHTML = '<option value="">Select a location</option>';
         data.forEach(loc => {
             let option = document.createElement("option");
-            option.value = loc.room_id;  // 存 room_id
+            option.value = loc.room_id;
             option.textContent = loc.locationname;
             locationSelect.appendChild(option);
         });
@@ -214,6 +214,7 @@ function proceedToPayment() {
             return;
         }
         alert("Booking successful! Rental ID: " + data.rental_id);
+        localStorage.setItem('Rental_id',data.rental_id)
         window.location.href = "/rentals/payment/";
     })
     .catch(error => {

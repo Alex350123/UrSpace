@@ -98,7 +98,7 @@
             var dob = document.getElementById('dob').value;
             var csrftoken = getCookie('csrftoken');
 
-            fetch('/customers/api/register/', {
+            fetch('/api/register/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -122,7 +122,7 @@
             .then(data => {
                 if (data.success) {
                     document.getElementById('success-message').innerText = 'Registration successful';
-                    setTimeout(() => location.href = 'Customer_Login.html', 2000);
+                    setTimeout(() => location.href = '/', 2000);
                 } else {
                     document.getElementById('success-message').innerText = data.message;
                 }

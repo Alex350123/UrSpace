@@ -214,6 +214,7 @@
                 return;
             }
             alert("Booking successful! Rental ID: " + data.rental_id);
+            localStorage.setItem('Rental_id',data.rental_id)
             window.location.href = "/rentals/payment/";
         })
         .catch(error => {

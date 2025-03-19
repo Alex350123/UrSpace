@@ -14,14 +14,18 @@ from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# 设置 Django 识别的静态文件路径
+# 让 Django 识别静态文件
 STATIC_URL = "/static/"
 
-# 只需要 STATIC_ROOT，不需要 STATICFILES_DIRS（避免路径冲突）
+# 让 `collectstatic` 复制文件到这里
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# 使用 Whitenoise 存储静态文件，确保它们可以在生产环境中被正确提供
+# **不要** 设置 `STATICFILES_DIRS`，避免冲突！
+# STATICFILES_DIRS = [BASE_DIR / "static"]
+
+# 让 Whitenoise 正确提供静态文件
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
 
 
 # Quick-start development settings - unsuitable for production

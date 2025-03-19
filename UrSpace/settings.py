@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+ALLOWED_HOSTS = ["urspace.onrender.com", "127.0.0.1", "localhost"]
+
 
 SIMPLEUI_INDEX = 'Urspace Manager'  # 直接修改后台首页标题
 

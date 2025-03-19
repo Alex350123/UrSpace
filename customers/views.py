@@ -30,6 +30,7 @@ class CustomerRegisterView(APIView):
 
 
 class CustomerLoginView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request):
         email = request.data.get('email')
         password = request.data.get('password')

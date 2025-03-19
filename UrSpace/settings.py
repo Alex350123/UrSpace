@@ -27,7 +27,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-SIMPLEUI_TITLE = 'UrSpace Manager'
+
+SIMPLEUI_INDEX = 'Urspace Manager'  # 直接修改后台首页标题
+
+
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'customers.utils.CustomerTokenAuthentication',

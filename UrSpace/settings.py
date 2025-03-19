@@ -25,9 +25,8 @@ FERNET_KEY='ldRd192XUJ0V6gCaLCtlllD98nw313TM_vGtmNCz_OI='
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
 
-ALLOWED_HOSTS = ["urspace.onrender.com", "127.0.0.1", "localhost"]
+ALLOWED_HOSTS = ["*"]
 
 
 SIMPLEUI_INDEX = 'Urspace Manager'  # 直接修改后台首页标题

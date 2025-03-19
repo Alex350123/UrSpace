@@ -4,7 +4,7 @@ import os
 from django.shortcuts import render
 from django.utils.timezone import localtime
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -18,6 +18,7 @@ from rentals.models import Rental
 cipher = Fernet(settings.FERNET_KEY.encode())
 # Create your views here.
 class CustomerRegisterView(APIView):
+    permission_classes = [AllowAny]
     def post(self, request, format=None):
         serializer = RegisterCustomerSerializer(data=request.data)
         if serializer.is_valid():
